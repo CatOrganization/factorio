@@ -5,10 +5,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/aws-sdk-go/aws"
-	"github.com/aws-sdk-go/aws/credentials"
-	awsSession "github.com/aws-sdk-go/aws/session"
-	"github.com/aws-sdk-go/service/ec2"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	awsSession "github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
 var (
@@ -17,8 +17,13 @@ var (
 )
 
 func main() {
-	config := aws.NewConfig().WithCredentials(credentials.NewStaticCredentials(accessKeyID, secretKey, ""))
-	session := awsSession.NewSession(config)
+	config := aws.NewConfig().
+		WithCredentials(credentials.NewStaticCredentials(accessKeyID, secretKey, ""))
+	session, err := awsSession.NewSession(config)
+	if err != nil {
+		log.Printf("Couldnt make session; err: %s", err)
+		os.Exit(1)
+	}
 
 	ec2Service := ec2.New(session)
 
