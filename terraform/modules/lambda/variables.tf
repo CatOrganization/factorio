@@ -1,17 +1,16 @@
 variable "name" {
-  description = "Name of lambda function, binary, and source code"
+  description = "Name of the factorio action, binary, and source code"
 }
 
 variable "lambda_role_arn" {
   description = "The IAM arn of the role to apply to this lambda"
 }
 
-variable "sourceBucket" {
+variable "source_bucket" {
   description = "S3 bucket where source code lives"
-  default = "factorio-lambda"
 }
 
-variable "builtPrefix" {
+variable "built_prefix" {
   description = "Path prefix where the built artifcats are (source and zip"
   default = "../built"
 }

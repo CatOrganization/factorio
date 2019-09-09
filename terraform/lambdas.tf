@@ -30,23 +30,79 @@ data "aws_iam_policy_document" "lambda_assume_role_policy" {
 
 data "aws_iam_policy_document" "lambda_role_policy" {
   statement {
+    sid    = "EC2"
     effect = "Allow"
 
-    actions   = ["*"]
-    resources = ["*"]
+    actions = [
+      "ec2:StartInstances",
+      "ec2:StopInstances",
+    ]
+    resources = [
+        "arn:aws:ec2:${var.region}:${var.account}:instances/*",
+    ]
+  }
+
+  statement {
+    sid    = "EC2Describe"
+    effect = "Allow"
+
+    actions = [
+      "ec2:Describe*",
+//      "ec2:E*",
+//      "ec2:Get*",
+//      "ec2:RunInstance*",
+//      "ec2:Modify*",
+      "ec2:M*Instances",
+      "ec2:R*Instances",
+      "ec2:P*Instances",
+//      "ec2:T*Instances",
+      "ec2:U*Instances",
+//      "ec2:*Instances"
+    ]
+    resources = [
+      "*"
+    ]
+  }
+
+  statement {
+    sid    = "CloudWatch"
+    effect = "Allow"
+
+    actions = [
+      "cloudwatch:Put*",
+      "logs:CreateLogGroup",
+    ]
+    resources = [
+      "*"
+    ]
+  }
+
+  statement {
+    sid    = "LogStream"
+    effect = "Allow"
+
+    actions = [
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+    ]
+    resources = [
+      "arn:aws:logs:${var.region}:${var.account}:log-group:/aws/lambda/factorio-*"
+    ]
   }
 }
 
 module "hello_lambda" {
   source = "./modules/lambda"
 
-  name = "hello"
+  name            = "hello"
+  source_bucket   = aws_s3_bucket.source_bucket.bucket
   lambda_role_arn = aws_iam_role.lambda_role.arn
 }
 
-module "factorio_lambda" {
+module "start_factorio" {
   source = "./modules/lambda"
 
-  name = "factorio"
+  name            = "start"
+  source_bucket   = aws_s3_bucket.source_bucket.bucket
   lambda_role_arn = aws_iam_role.lambda_role.arn
 }

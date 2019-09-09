@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
 	awsSession "github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
@@ -39,11 +40,13 @@ func getEnvBool(envVar string, dfault bool) bool {
 	return b
 }
 
-func main() {
+func handler() error {
+	log.Print("Starting Factorio")
+
 	session, err := awsSession.NewSession()
 	if err != nil {
 		log.Printf("Couldnt make session; err: %s", err)
-		os.Exit(1)
+		return err
 	}
 
 	ec2Service := ec2.New(session)
@@ -55,10 +58,16 @@ func main() {
 	out, err := ec2Service.StartInstances(input)
 	if err != nil {
 		log.Printf("Failed to start instance; err: %s", err)
-		os.Exit(1)
+		return err
 	}
 
 	for _, instance := range out.StartingInstances {
 		log.Print(instance.GoString())
 	}
+
+	return nil
+}
+
+func main() {
+	lambda.Start(handler)
 }
