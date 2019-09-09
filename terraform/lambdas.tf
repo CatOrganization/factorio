@@ -48,16 +48,7 @@ data "aws_iam_policy_document" "lambda_role_policy" {
 
     actions = [
       "ec2:Describe*",
-//      "ec2:E*",
-//      "ec2:Get*",
-//      "ec2:RunInstance*",
-//      "ec2:Modify*",
-      "ec2:M*Instances",
-      "ec2:R*Instances",
-      "ec2:P*Instances",
-//      "ec2:T*Instances",
-      "ec2:U*Instances",
-//      "ec2:*Instances"
+      "ec2:*Instances"
     ]
     resources = [
       "*"
