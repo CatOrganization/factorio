@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -17,7 +16,13 @@ var (
 )
 
 func main() {
+	if accessKeyID == "" || secretKey == "" {
+		log.Print("Missing keys")
+		os.Exit(1)
+	}
+
 	config := aws.NewConfig().
+		WithRegion("us-east-2").
 		WithCredentials(credentials.NewStaticCredentials(accessKeyID, secretKey, ""))
 	session, err := awsSession.NewSession(config)
 	if err != nil {
@@ -26,15 +31,5 @@ func main() {
 	}
 
 	ec2Service := ec2.New(session)
-
-	// func (c *EC2) DescribeInstances(input *DescribeInstancesInput) (*DescribeInstancesOutput, error)
-
-	input := &ec2.DescribeInstancesInput{}
-	output, err := ec2Service.DescribeInstances(input)
-	if err != nil {
-		log.Printf("Shit's broke yo: %s", err)
-		os.Exit(32)
-	}
-
-	fmt.Printf("%s\n", output.GoString())
+	println(ec2Service)
 }
