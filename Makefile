@@ -1,16 +1,21 @@
+HANDLERS:=$(shell git ls-files cmd/ | cut -d/ -f2 | uniq )
+BINARIES:=$(patsubst %, built/%, ${HANDLERS})
 
 clean:
 	rm -rf built
 	$(MAKE) -C terraform clean
 
-hello:
-	GOOS=linux go build -o built/hello cmd/hello/hello.go
+#.PRECIOUS: built/%
+built/%: cmd/%/*.go
+	GOOS=linux go build -o built/$* cmd/$*/main.go
 
-plan: hello
+build: ${BINARIES}
+
+plan: build
 	$(MAKE) -C terraform plan
 
-apply: hello
+apply: build
 	$(MAKE) -C terraform apply
 
-yes-apply: hello
+yes-apply: build
 	$(MAKE) -C terraform yes-apply
